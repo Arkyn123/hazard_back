@@ -1,0 +1,39 @@
+generator client {
+    provider = "prisma-client-js"
+    output   = "../../node_modules/@prisma/postgres/hazard"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("HAZARD_URL")
+}
+
+model hazard {
+    createdBy   Int?
+    updatedBy   Int?
+    deletedBy   Int?
+    id          Int         @id @default(autoincrement())
+    name        String      @db.VarChar(255)
+    probability Int
+    severity    Int
+    ps          Int
+    type_id     Int
+    createdAt   DateTime?   @default(now()) @db.Timestamptz(6)
+    updatedAt   DateTime?   @default(now()) @db.Timestamptz(6)
+    deletedAt   DateTime?   @db.Timestamptz(6)
+    hazard_type hazard_type @relation(fields: [type_id], references: [id], onDelete: Cascade)
+}
+
+model hazard_type {
+    createdBy Int?
+    updatedBy Int?
+    deletedBy Int?
+    id        Int       @id @default(autoincrement())
+    name      String    @db.VarChar(255)
+    createdAt DateTime? @default(now()) @db.Timestamptz(6)
+    updatedAt DateTime? @default(now()) @db.Timestamptz(6)
+    deletedAt DateTime? @db.Timestamptz(6)
+    hazards   hazard[]
+
+    @@map("hazard-type")
+}
