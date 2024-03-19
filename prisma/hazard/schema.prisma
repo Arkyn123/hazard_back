@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
     provider = "postgresql"
-    url      = env("HAZARD_URL")
+    url      = "postgresql://postgres:root@localhost:5432/hazard?schema=public"
 }
 
 model hazard {
