@@ -10,7 +10,6 @@ export class HazardRepository implements OnApplicationBootstrap {
     constructor(
         private readonly database: DatabaseHazard,
         @Inject(forwardRef(() => HazardTypeRepository)) private hazard_type: HazardTypeRepository,
-        private readonly als: AsyncLocalStorage<any>
     ) { }
 
     async onApplicationBootstrap() {
@@ -18,49 +17,75 @@ export class HazardRepository implements OnApplicationBootstrap {
         if (!hazards.length) return await this.hazard.createMany({ data: defaultHazards.map(el => ({ ...el, ps: el.probability * el.severity })) })
     }
 
-    private readonly hazard = this.database.hazard
+    private readonly hazard = this.database.client.hazard
 
-    async create(data: Prisma.hazardCreateInput) {
-        await this.hazard_type.findOne(data.hazard_type as number)
-        const emp = this.als.getStore().emp
-        const hazard = await this.findByName(data.name)
+    private async checkConflict(name: string) {
+        const hazard = await this.hazard.findFirst({ where: { name } })
         if (hazard) throw new ConflictException('Опасность с таким именем уже создана!')
-        return this.hazard.create({ data: { ...data, createdBy: emp, updatedBy: emp } })
     }
 
-    private async findByName(name: string) {
-        return await this.database.hazard.findFirst({ where: { name, deletedAt: null, deletedBy: null } })
+    async create(data: Prisma.hazardCreateInput) {
+        await this.hazard_type.findOne(data.hazard_type.connect.id)
+        await this.checkConflict(data.name)
+
+        return this.hazard.create({ data })
     }
 
     async removeMany(data: number[]) {
-        const emp = this.als.getStore().emp
-        return await this.hazard.updateMany({ data: { deletedBy: emp, deletedAt: new Date() }, where: { id: { in: data } } })
+        return await this.hazard.deleteMany({ where: { id: { in: data } } })
     }
 
     async findAll() {
         return await this.hazard.findMany({
-            where: { deletedAt: null, deletedBy: null },
             select: {
                 id: true,
                 name: true,
                 probability: true,
                 severity: true,
                 ps: true,
-                type_id: true
+                type_id: true,
+                parameters: {
+                    select: {
+                        id: true,
+                        name: true,
+                        comment: true,
+                        measurements: true
+                    }
+                },
+                substances: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
             }
         })
     }
 
     async findOne(id: number) {
         const hazard = await this.hazard.findUnique({
-            where: { id, deletedAt: null, deletedBy: null },
+            where: { id },
             select: {
                 id: true,
                 name: true,
                 probability: true,
                 severity: true,
                 ps: true,
-                type_id: true
+                type_id: true,
+                parameters: {
+                    select: {
+                        id: true,
+                        name: true,
+                        comment: true,
+                        measurements: true
+                    }
+                },
+                substances: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
             }
         })
 
@@ -70,19 +95,21 @@ export class HazardRepository implements OnApplicationBootstrap {
 
     async update(id: number, data: Prisma.hazardUpdateInput) {
         const hazard = await this.findOne(id)
-        const emp = this.als.getStore().emp
 
-        if (data.probability || data.severity) {
+        if (data.probability != null || data.severity != null) {
             const probability = data.probability as number
             const severity = data.severity as number
-            data.ps = (probability || hazard.probability) * (severity || hazard.severity)
+
+            if (probability == 0 || severity == 0) data.ps = 0
+            else {
+                data.ps = (probability || hazard.probability) * (severity || hazard.severity)
+            }
         }
-        return await this.hazard.update({ where: { id }, data: { ...data, updatedBy: emp } })
+        return await this.hazard.update({ where: { id }, data })
     }
 
     async remove(id: number) {
         await this.findOne(id)
-        const emp = this.als.getStore().emp
-        return await this.hazard.update({ where: { id }, data: { deletedBy: emp, deletedAt: new Date() } })
+        return await this.hazard.delete({ where: { id } })
     }
 }

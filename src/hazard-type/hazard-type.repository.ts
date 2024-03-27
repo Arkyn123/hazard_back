@@ -1,6 +1,5 @@
 import { ConflictException, Inject, Injectable, NotFoundException, OnApplicationBootstrap, OnModuleInit, forwardRef } from "@nestjs/common"
 import { Prisma } from '@prisma/postgres/hazard'
-import { AsyncLocalStorage } from "async_hooks"
 import { DatabaseHazard } from "src/database/database.service"
 import { defaultTypes } from "./default"
 import { HazardRepository } from "src/hazard/hazard.repository"
@@ -10,7 +9,7 @@ export class HazardTypeRepository implements OnApplicationBootstrap {
     constructor(
         private readonly database: DatabaseHazard,
         @Inject(forwardRef(() => HazardRepository)) private hazard: HazardRepository,
-        private readonly als: AsyncLocalStorage<any>,
+
     ) { }
 
     async onApplicationBootstrap() {
@@ -18,14 +17,13 @@ export class HazardTypeRepository implements OnApplicationBootstrap {
         if (!types.length) await this.createMany(defaultTypes)
     }
 
-    private readonly hazard_type = this.database.hazard_type
+    private readonly hazard_type = this.database.client.hazard_type
 
     async create(data: Prisma.hazard_typeCreateInput) {
         const type = await this.findByName(data.name)
         if (type) throw new ConflictException('Вид опасности с таким именем уже создан!')
 
-        const emp = this.als.getStore().emp
-        return await this.hazard_type.create({ data: { ...data, createdBy: emp, updatedBy: emp } })
+        return await this.hazard_type.create({ data })
     }
 
     async createMany(data: Prisma.hazard_typeCreateInput[]) {
@@ -33,12 +31,11 @@ export class HazardTypeRepository implements OnApplicationBootstrap {
     }
 
     private async findByName(name: string) {
-        return await this.hazard_type.findFirst({ where: { name, deletedAt: null, deletedBy: null } })
+        return await this.hazard_type.findFirst({ where: { name } })
     }
 
     async findAll() {
         return await this.hazard_type.findMany({
-            where: { deletedAt: null, deletedBy: null },
             select: {
                 id: true,
                 name: true,
@@ -58,7 +55,6 @@ export class HazardTypeRepository implements OnApplicationBootstrap {
 
     async findTypes() {
         return await this.hazard_type.findMany({
-            where: { deletedAt: null, deletedBy: null },
             select: {
                 id: true,
                 name: true,
@@ -69,7 +65,7 @@ export class HazardTypeRepository implements OnApplicationBootstrap {
 
     async findOne(id: number) {
         const type = await this.hazard_type.findUnique({
-            where: { id, deletedAt: null, deletedBy: null },
+            where: { id },
             select: {
                 id: true,
                 name: true,
@@ -91,16 +87,16 @@ export class HazardTypeRepository implements OnApplicationBootstrap {
 
     async update(id: number, data: Prisma.hazard_typeUpdateInput) {
         await this.findOne(id)
-        const emp = this.als.getStore().emp
-        return await this.hazard_type.update({ where: { id }, data: { ...data, updatedBy: emp } })
+
+        return await this.hazard_type.update({ where: { id }, data })
     }
 
     async remove(id: number) {
         const type = await this.findOne(id)
-        const emp = this.als.getStore().emp
+
         return await this.database.$transaction(async () => {
-            this.hazard.removeMany(type.hazards.map(h => h.id));
-            this.hazard_type.update({ where: { id }, data: { deletedBy: emp, deletedAt: new Date() } });
+            this.hazard.removeMany(type.hazards.map(h => h.id))
+            this.hazard_type.delete({ where: { id } })
         })[1]
     }
 }

@@ -1,8 +1,14 @@
-import { IsEmpty, IsInt, IsPositive, IsString } from "class-validator"
+import { IsBoolean, IsEmpty, IsInt, IsPositive, IsString } from "class-validator"
 
 export class CreateHazardDto {
     @IsString()
     name: string
+
+    @IsBoolean()
+    usedInQs: boolean
+
+    @IsString()
+    question: string
 
     @IsInt()
     @IsPositive()

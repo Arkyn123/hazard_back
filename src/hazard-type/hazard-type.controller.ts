@@ -25,7 +25,7 @@ export class HazardTypeController {
     return this.hazardTypeService.findOne(id)
   }
 
-  @Patch('id')
+  @Patch()
   update(@Body() updateHazardTypeDto: UpdateHazardTypeDto) {
     return this.hazardTypeService.update(updateHazardTypeDto)
   }

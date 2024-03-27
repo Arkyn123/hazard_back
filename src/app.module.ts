@@ -4,9 +4,11 @@ import { HazardTypeModule } from './hazard-type/hazard-type.module'
 import { HazardModule } from './hazard/hazard.module'
 import { CacheModule } from '@nestjs/cache-manager'
 import { AuthModule } from './auth/auth.module'
-import { AlsMiddleware } from './als/als.middleware'
-import { AlsModule } from './als/als.module'
 import { DatabaseModule } from './database/database.module'
+import { ParameterModule } from './parameter/parameter.module'
+import { SubstanceModule } from './substance/substance.module'
+import { AlsModule } from './als/als.module'
+import { AlsMiddleware } from './als/als.middleware'
 
 @Module({
   imports: [
@@ -20,8 +22,10 @@ import { DatabaseModule } from './database/database.module'
     HazardTypeModule,
     HazardModule,
     AuthModule,
-    AlsModule,
-    DatabaseModule
+    DatabaseModule,
+    ParameterModule,
+    SubstanceModule,
+    AlsModule
   ],
   controllers: [],
   providers: [],
@@ -34,5 +38,3 @@ export class AppModule implements NestModule {
       .forRoutes('*')
   }
 }
-
-

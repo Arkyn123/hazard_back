@@ -1,39 +1,74 @@
 generator client {
-    provider = "prisma-client-js"
-    output   = "../../node_modules/@prisma/postgres/hazard"
+  provider = "prisma-client-js"
+  output   = "../../node_modules/@prisma/postgres/hazard"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = "postgresql://postgres:root@localhost:5432/hazard?schema=public"
+  provider = "postgresql"
+  url      = "postgresql://postgres:root@localhost:5432/hazard?schema=public"
 }
 
 model hazard {
-    createdBy   Int?
-    updatedBy   Int?
-    deletedBy   Int?
-    id          Int         @id @default(autoincrement())
-    name        String      @db.VarChar(255)
-    probability Int
-    severity    Int
-    ps          Int
-    type_id     Int
-    createdAt   DateTime?   @default(now()) @db.Timestamptz(6)
-    updatedAt   DateTime?   @default(now()) @db.Timestamptz(6)
-    deletedAt   DateTime?   @db.Timestamptz(6)
-    hazard_type hazard_type @relation(fields: [type_id], references: [id], onDelete: Cascade)
+  createdBy   Int         @default(0)
+  updatedBy   Int         @default(0)
+  deletedBy   Int?
+  id          Int         @id @default(autoincrement())
+  name        String      @db.VarChar(255)
+  probability Int
+  severity    Int
+  ps          Int
+  type_id     Int
+  //Использование в опросе
+  usedInQs    Boolean     @default(false) @db.Boolean()
+  //Вопрос в опросе
+  question    String?     @db.VarChar(255)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  deletedAt   DateTime?
+  hazard_type hazard_type @relation(fields: [type_id], references: [id], onDelete: Cascade)
+  parameters  parameter[]
+  substances  substance[]
 }
 
 model hazard_type {
-    createdBy Int?
-    updatedBy Int?
-    deletedBy Int?
-    id        Int       @id @default(autoincrement())
-    name      String    @db.VarChar(255)
-    createdAt DateTime? @default(now()) @db.Timestamptz(6)
-    updatedAt DateTime? @default(now()) @db.Timestamptz(6)
-    deletedAt DateTime? @db.Timestamptz(6)
-    hazards   hazard[]
+  createdBy Int       @default(0)
+  updatedBy Int       @default(0)
+  deletedBy Int?
+  id        Int       @id @default(autoincrement())
+  name      String    @db.VarChar(255)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  hazards   hazard[]
 
-    @@map("hazard-type")
+  @@map("hazard-type")
+}
+
+model parameter {
+  createdBy    Int       @default(0)
+  updatedBy    Int       @default(0)
+  deletedBy    Int?
+  id           Int       @id @default(autoincrement())
+  hazard_id    Int
+  name         String    @db.VarChar(255)
+  comment      String?   @db.VarChar(255)
+  //Кол-во измерений
+  measurements Int
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+  hazard       hazard    @relation(fields: [hazard_id], references: [id], onDelete: Cascade)
+}
+
+model substance {
+  createdBy Int       @default(0)
+  updatedBy Int       @default(0)
+  deletedBy Int?
+  id        Int       @id @default(autoincrement())
+  hazard_id Int
+  name      String    @db.VarChar(255)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  hazard    hazard    @relation(fields: [hazard_id], references: [id], onDelete: Cascade)
 }
