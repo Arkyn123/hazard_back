@@ -1,4 +1,4 @@
-import { IsBoolean, IsEmpty, IsInt, IsPositive, IsString } from "class-validator"
+import { IsBoolean, IsEmpty, IsInt, IsOptional, IsPositive, IsString } from "class-validator"
 
 export class CreateHazardDto {
     @IsString()
@@ -8,6 +8,7 @@ export class CreateHazardDto {
     usedInQs: boolean
 
     @IsString()
+    @IsOptional()
     question: string
 
     @IsInt()

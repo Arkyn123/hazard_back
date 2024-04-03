@@ -12,23 +12,64 @@ const customPrismaClient = (prismaClient: DatabaseHazard) => {
             $allModels: {
                 async create({ args, query, model }) {
                     prismaClient.cache.del(model)
+                    console.log(model)
+
+                    switch (model) {
+                        case 'hazard':
+                            prismaClient.cache.del('hazard_type')
+                            break
+                        case 'parameter':
+                        case 'substance':
+                            prismaClient.cache.del('hazard')
+                            break
+                    }
 
                     args.data.createdBy = prismaClient.emp
                     args.data.updatedBy = prismaClient.emp
-                    return query(args);
+                    return query(args)
                 },
                 async update({ args, query, model }) {
                     prismaClient.cache.del(model)
+
+                    switch (model) {
+                        case 'hazard':
+                            prismaClient.cache.del('hazard_type')
+                            break
+                        case 'parameter':
+                        case 'substance':
+                            prismaClient.cache.del('hazard')
+                            break
+                    }
 
                     return query({ ...args, data: { ...args.data, updatedBy: prismaClient.emp } })
                 },
                 async delete({ args, model }) {
                     prismaClient.cache.del(model)
 
+                    switch (model) {
+                        case 'hazard':
+                            prismaClient.cache.del('hazard_type')
+                            break
+                        case 'parameter':
+                        case 'substance':
+                            prismaClient.cache.del('hazard')
+                            break
+                    }
+
                     return (original as any)[model].update({ data: { deletedAt: new Date(), deletedBy: prismaClient.emp }, where: args.where })
                 },
                 async deleteMany({ args, model }) {
                     prismaClient.cache.del(model)
+
+                    switch (model) {
+                        case 'hazard':
+                            prismaClient.cache.del('hazard_type')
+                            break
+                        case 'parameter':
+                        case 'substance':
+                            prismaClient.cache.del('hazard')
+                            break
+                    }
 
                     return (original as any)[model].updateMany({ data: { deletedAt: new Date(), deletedBy: prismaClient.emp }, where: args.where })
                 },
@@ -75,7 +116,7 @@ export class DatabaseHazard extends PrismaClient implements OnModuleInit, OnModu
     private customPrismaClient: ReturnType<typeof customPrismaClient>
 
     get emp() {
-        return this.als.getStore()?.emp;
+        return this.als.getStore()?.emp
     }
 
     get cache() {

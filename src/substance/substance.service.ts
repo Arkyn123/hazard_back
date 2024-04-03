@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { CreateSubstanceDto } from './dto/create-substance.dto';
-import { UpdateSubstanceDto } from './dto/update-substance.dto';
-import { SubstanceRepository } from './substance.repository';
+import { Injectable } from '@nestjs/common'
+import { CreateSubstanceDto } from './dto/create-substance.dto'
+import { UpdateSubstanceDto } from './dto/update-substance.dto'
+import { SubstanceRepository } from './substance.repository'
 
 @Injectable()
 export class SubstanceService {
@@ -17,11 +17,11 @@ export class SubstanceService {
   }
 
   findAll() {
-    return `This action returns all substance`;
+    return `This action returns all substance`
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} substance`;
+    return `This action returns a #${id} substance`
   }
 
   update(updateSubstanceDto: UpdateSubstanceDto) {
@@ -29,6 +29,6 @@ export class SubstanceService {
   }
 
   remove(id: number) {
-    return `This action removes a #${id} substance`;
+    return `This action removes a #${id} substance`
   }
 }

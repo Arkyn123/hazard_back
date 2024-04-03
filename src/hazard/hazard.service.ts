@@ -1,9 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable } from '@nestjs/common'
 import { CreateHazardDto } from './dto/create-hazard.dto'
 import { UpdateHazardDto } from './dto/update-hazard.dto'
-import { Cache } from 'cache-manager'
-import { CACHE_MANAGER } from '@nestjs/cache-manager'
-import { ConfigService } from '@nestjs/config'
 import { HazardRepository } from './hazard.repository'
 
 @Injectable()
@@ -13,6 +10,8 @@ export class HazardService {
   ) { }
 
   async create(createHazardDto: CreateHazardDto) {
+    if (createHazardDto.usedInQs && !createHazardDto.question) throw new BadRequestException('Введите вопрос')
+
     createHazardDto.ps = createHazardDto.probability * createHazardDto.severity
     createHazardDto.hazard_type = { connect: { id: createHazardDto.type_id } }
     delete createHazardDto.type_id

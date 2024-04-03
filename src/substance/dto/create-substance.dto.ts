@@ -1,4 +1,4 @@
-import { IsEmpty, IsInt, IsPositive, IsString } from "class-validator";
+import { IsEmpty, IsInt, IsPositive, IsString } from "class-validator"
 
 export class CreateSubstanceDto {
     @IsString()

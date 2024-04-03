@@ -3,6 +3,7 @@ import { Inject, Injectable, Logger, NestMiddleware, UnauthorizedException } fro
 import { ConfigService } from '@nestjs/config'
 import { AsyncLocalStorage } from 'async_hooks'
 import { Cache } from 'cache-manager'
+import fetch from 'node-fetch'
 
 @Injectable()
 export class AlsMiddleware implements NestMiddleware {
