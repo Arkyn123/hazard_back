@@ -1,21 +1,14 @@
-import { ConflictException, Inject, Injectable, NotFoundException, OnApplicationBootstrap, OnModuleInit, forwardRef } from "@nestjs/common"
+import { ConflictException, Inject, Injectable, NotFoundException, forwardRef } from "@nestjs/common"
 import { Prisma } from '@prisma/postgres/hazard'
 import { DatabaseHazard } from "src/database/database.service"
-import { defaultTypes } from "./default"
 import { HazardRepository } from "src/hazard/hazard.repository"
 
 @Injectable()
-export class HazardTypeRepository implements OnApplicationBootstrap {
+export class HazardTypeRepository {
     constructor(
         private readonly database: DatabaseHazard,
-        @Inject(forwardRef(() => HazardRepository)) private hazard: HazardRepository,
-
+        @Inject(forwardRef(() => HazardRepository)) private hazard: HazardRepository
     ) { }
-
-    async onApplicationBootstrap() {
-        const types = await this.findAll()
-        if (!types.length) await this.createMany(defaultTypes)
-    }
 
     private readonly hazard_type = this.database.client.hazard_type
 
@@ -26,9 +19,6 @@ export class HazardTypeRepository implements OnApplicationBootstrap {
         return await this.hazard_type.create({ data })
     }
 
-    async createMany(data: Prisma.hazard_typeCreateInput[]) {
-        return await this.hazard_type.createMany({ data })
-    }
 
     private async findByName(name: string) {
         return await this.hazard_type.findFirst({ where: { name } })

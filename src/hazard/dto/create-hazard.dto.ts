@@ -9,7 +9,7 @@ export class CreateHazardDto {
 
     @IsString()
     @IsOptional()
-    question: string
+    question?: string
 
     @IsInt()
     @IsPositive()
@@ -20,12 +20,12 @@ export class CreateHazardDto {
     severity: number
 
     @IsEmpty()
-    ps: number
+    ps?: number
 
     @IsInt()
     @IsPositive()
     type_id: number
 
     @IsEmpty()
-    hazard_type: any
+    hazard_type?: { connect: { id: number } }
 }

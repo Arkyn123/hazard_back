@@ -10,9 +10,27 @@ const customPrismaClient = (prismaClient: DatabaseHazard) => {
     const prisma = prismaClient.$extends({
         query: {
             $allModels: {
+                async createMany({ args, query, model }) {
+                    prismaClient.cache.del(model)
+
+                    switch (model) {
+                        case 'hazard':
+                            prismaClient.cache.del('hazard_type')
+                            break
+                        case 'parameter':
+                        case 'substance':
+                            prismaClient.cache.del('hazard')
+                            break
+                    }
+                    const values = args.data as any[]
+                    values.forEach(element => {
+                        element.createdBy = prismaClient.emp
+                        element.updatedBy = prismaClient.emp
+                    })
+                    return query(args)
+                },
                 async create({ args, query, model }) {
                     prismaClient.cache.del(model)
-                    console.log(model)
 
                     switch (model) {
                         case 'hazard':

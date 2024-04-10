@@ -1,9 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { CreateHazardTypeDto } from './dto/create-hazard-type.dto'
 import { UpdateHazardTypeDto } from './dto/update-hazard-type.dto'
-import { CACHE_MANAGER } from '@nestjs/cache-manager'
-import { Cache } from 'cache-manager'
-import { ConfigService } from '@nestjs/config'
 import { HazardTypeRepository } from './hazard-type.repository'
 
 @Injectable()
@@ -18,17 +15,17 @@ export class HazardTypeService {
   }
 
   async findAll() {
-    return  await this.hazard_type.findAll()
-      }
+    return await this.hazard_type.findAll()
+  }
 
   async findTypes() {
     return await this.hazard_type.findTypes()
-    
+
   }
 
   async findOne(id: number) {
     return await this.hazard_type.findOne(id)
-    
+
   }
 
   async update(updateHazardTypeDto: UpdateHazardTypeDto) {

@@ -41,7 +41,7 @@ model hazard_type {
   deletedAt DateTime?
   hazards   hazard[]
 
-  @@map("hazard-type")
+  //@@map("hazard-type")
 }
 
 model parameter {

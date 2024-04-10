@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=root
     container_name: hazard_base
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - /home/voskresenskii/volumes/hazard/pgdata:/var/lib/postgresql/data
 
   hazard:
     build:
@@ -23,5 +23,5 @@ services:
     depends_on:
       - db
     volumes:
-      - ./src:/app/src
+      - .:/app
  

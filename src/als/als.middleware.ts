@@ -13,9 +13,7 @@ export class AlsMiddleware implements NestMiddleware {
         private readonly config: ConfigService
     ) { }
 
-
     private readonly logger = new Logger()
-
 
     async use(req: any, res: any, next: () => void) {
         const authHeader = req.headers.authorization as string
@@ -30,7 +28,7 @@ export class AlsMiddleware implements NestMiddleware {
         await this.cacheManager.set(token, store, this.config.get('CACHE_TTL'))
 
         this.als.run(store, () => {
-            this.logger.log(req.method + req.originalUrl + ' ' + store.FIO + ' ' + store.emp)
+            this.logger.log(req.method + req.originalUrl + ' ' + store.FIO.toLowerCase().split(' ').map(el => el.charAt(0).toUpperCase() + el.slice(1)).join(' ') + ' ' + store.emp)
             next()
         })
     }

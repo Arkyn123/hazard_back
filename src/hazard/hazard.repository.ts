@@ -1,21 +1,14 @@
-import { ConflictException, Inject, Injectable, NotFoundException, OnApplicationBootstrap, forwardRef } from "@nestjs/common"
-import { AsyncLocalStorage } from "async_hooks"
+import { ConflictException, Inject, Injectable, NotFoundException, forwardRef } from "@nestjs/common"
 import { DatabaseHazard } from "src/database/database.service"
 import { Prisma } from '@prisma/postgres/hazard'
-import { defaultHazards } from "./default"
 import { HazardTypeRepository } from "src/hazard-type/hazard-type.repository"
 
 @Injectable()
-export class HazardRepository implements OnApplicationBootstrap {
+export class HazardRepository {
     constructor(
         private readonly database: DatabaseHazard,
         @Inject(forwardRef(() => HazardTypeRepository)) private hazard_type: HazardTypeRepository,
     ) { }
-
-    async onApplicationBootstrap() {
-        const hazards = await this.findAll()
-        if (!hazards.length) return await this.hazard.createMany({ data: defaultHazards.map(el => ({ ...el, ps: el.probability * el.severity })) })
-    }
 
     private readonly hazard = this.database.client.hazard
 
@@ -27,8 +20,7 @@ export class HazardRepository implements OnApplicationBootstrap {
     async create(data: Prisma.hazardCreateInput) {
         await this.hazard_type.findOne(data.hazard_type.connect.id)
         await this.checkConflict(data.name)
-
-        return this.hazard.create({ data })
+        return await this.hazard.create({ data })
     }
 
     async removeMany(data: number[]) {
@@ -95,6 +87,7 @@ export class HazardRepository implements OnApplicationBootstrap {
 
     async update(id: number, data: Prisma.hazardUpdateInput) {
         const hazard = await this.findOne(id)
+        await this.hazard_type.findOne(data.hazard_type.connect.id)
 
         if (data.probability != null || data.severity != null) {
             const probability = data.probability as number

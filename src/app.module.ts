@@ -26,9 +26,7 @@ import { AlsMiddleware } from './als/als.middleware'
     ParameterModule,
     SubstanceModule,
     AlsModule
-  ],
-  controllers: [],
-  providers: [],
+  ]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
