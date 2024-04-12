@@ -24,59 +24,56 @@ describe('Hazard (e2e)', () => {
       .compile()
 
     app = moduleFixture.createNestApplication()
+    const service = app.get(HazardService)
+    
     await app.init()
   })
 
   describe('POST /hazard Создание опасностей', () => {
-    it('Должно создать новую опасность', () => {
-      return request(app.getHttpServer())
+    it('Должно создать новую опасность', () =>
+      request(app.getHttpServer())
         .post('/hazard')
         .send(mockHazard)
+        .expect(201)
         .expect(res => {
           id = res.body.id
           expect(res.body).toEqual(createdHazard)
-        })
-    })
+        }))
 
-    it('Должно вернуть конфликт', async () => {
-      return request(app.getHttpServer())
+    it('Должно вернуть конфликт', async () =>
+      request(app.getHttpServer())
         .post('/hazard')
         .send(mockHazard)
         .expect(409)
-        .expect(res => expect(res.body.message).toBe('Опасность с таким именем уже создана!'))
-    })
+        .expect(res => expect(res.body.message).toBe('Опасность с таким именем уже создана!')))
 
-    it('Должно вернуть ошибку из-за отсутствия вопроса', async () => {
-      return request(app.getHttpServer())
+    it('Должно вернуть ошибку из-за отсутствия вопроса', async () =>
+      request(app.getHttpServer())
         .post('/hazard')
         .send(mockHazard2)
         .expect(400)
-        .expect(res => expect(res.body.message).toBe('Введите вопрос'))
-    })
+        .expect(res => expect(res.body.message).toBe('Введите вопрос')))
 
-    it('Должно вернуть ошибку из-за отсутствия типа', async () => {
-      return request(app.getHttpServer())
+    it('Должно вернуть ошибку из-за отсутствия вида', async () =>
+      request(app.getHttpServer())
         .post('/hazard')
         .send(mockHazard3)
         .expect(404)
-        .expect(res => expect(res.body.message).toBe('Вид опасности не найден'))
-    })
+        .expect(res => expect(res.body.message).toBe('Вид опасности не найден!')))
   })
 
   describe('GET /hazard Получение опасностей', () => {
-    it('Должно вернуть все опасности', async () => {
-      return request(app.getHttpServer())
+    it('Должно вернуть все опасности', async () =>
+      request(app.getHttpServer())
         .get('/hazard')
         .expect(200)
-        .expect(res => expect(res.body).toBeInstanceOf(Array))
-    })
+        .expect(res => expect(res.body).toBeInstanceOf(Array)))
 
-    it('Должно вернуть одну опасность', async () => {
-      return request(app.getHttpServer())
+    it('Должно вернуть одну опасность', async () =>
+      request(app.getHttpServer())
         .get('/hazard/' + id)
         .expect(200)
-        .expect(res => expect(res.body).toEqual(createdHazard))
-    })
+        .expect(res => expect(res.body).toEqual(createdHazard)))
 
     it('Должно вернуть ошибку из-за отсутствия опасности', async () => {
       return request(app.getHttpServer())
@@ -95,13 +92,12 @@ describe('Hazard (e2e)', () => {
         .expect(res => expect(res.body).toEqual(updatedHazard))
     })
 
-    it('Должно вернуть ошибку из-за отсутствия опасности', async () => {
-      return request(app.getHttpServer())
+    it('Должно вернуть ошибку из-за отсутствия опасности', async () =>
+      request(app.getHttpServer())
         .patch('/hazard')
         .send({ ...mockUpdateHazard, id: id + 1 })
         .expect(404)
-        .expect(res => expect(res.body.message).toBe('Опасность не найдена!'))
-    })
+        .expect(res => expect(res.body.message).toBe('Опасность не найдена!')))
 
     it('Должно вернуть ошибку из-за отсутствия вопроса', async () => {
       return request(app.getHttpServer())
@@ -111,30 +107,26 @@ describe('Hazard (e2e)', () => {
         .expect(res => expect(res.body.message).toBe('Введите вопрос'))
     })
 
-    it('Должно вернуть ошибку из-за отсутствия типа', async () => {
+    it('Должно вернуть ошибку из-за отсутствия вида', async () => {
       return request(app.getHttpServer())
         .patch('/hazard')
         .send({ ...mockUpdateHazard3, id })
         .expect(404)
-        .expect(res => expect(res.body.message).toBe('Вид опасности не найден'))
+        .expect(res => expect(res.body.message).toBe('Вид опасности не найден!'))
     })
   })
 
   describe('DELETE /hazard Удаление опасности', () => {
-    it('Должно удалить опасность', async () => {
-      return request(app.getHttpServer())
+    it('Должно удалить опасность', async () =>
+      request(app.getHttpServer())
         .delete('/hazard/' + id)
-        .send({ ...mockUpdateHazard, id })
         .expect(200)
-        .expect(res => expect(res.body).toEqual(deletedHazard))
-    })
+        .expect(res => expect(res.body).toEqual(deletedHazard)))
 
-    it('Должно вернуть ошибку из-за отсутствия опасности', async () => {
-      return request(app.getHttpServer())
+    it('Должно вернуть ошибку из-за отсутствия опасности', async () =>
+      request(app.getHttpServer())
         .delete('/hazard/' + id)
-        .send({ ...mockUpdateHazard, id })
         .expect(404)
-        .expect(res => expect(res.body.message).toBe('Опасность не найдена!'))
-    })
+        .expect(res => expect(res.body.message).toBe('Опасность не найдена!')))
   })
 })

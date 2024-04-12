@@ -2,16 +2,16 @@ import { CreateHazardDto } from "src/hazard/dto/create-hazard.dto"
 import { UpdateHazardDto } from "src/hazard/dto/update-hazard.dto"
 
 export const mockHazard = {
-    name: 'Test',
+    name: 'Hazard',
     probability: 2,
     severity: 2,
     usedInQs: true,
-    question: 'Test',
+    question: 'Question',
     type_id: 1
 } as CreateHazardDto
 
 export const mockHazard2 = {
-    name: 'Test2',
+    name: 'Hazard2',
     probability: 2,
     severity: 2,
     usedInQs: true,
@@ -20,26 +20,25 @@ export const mockHazard2 = {
 } as CreateHazardDto
 
 export const mockHazard3 = {
-    name: 'Test2',
+    name: 'Hazard2',
     probability: 2,
     severity: 2,
     usedInQs: true,
-    question: 'Test',
+    question: 'Question',
     type_id: 2
 } as CreateHazardDto
 
-
 export const mockUpdateHazard = {
-    name: 'TestUpdate',
+    name: 'HazardUpdate',
     probability: 4,
     severity: 4,
     usedInQs: true,
-    question: 'TestUpdate',
+    question: 'HazardUpdate',
     type_id: 1
 } as UpdateHazardDto
 
 export const mockUpdateHazard2 = {
-    name: 'TestUpdate',
+    name: 'HazardUpdate',
     probability: 4,
     severity: 4,
     usedInQs: true,
@@ -48,11 +47,11 @@ export const mockUpdateHazard2 = {
 } as UpdateHazardDto
 
 export const mockUpdateHazard3 = {
-    name: 'TestUpdate',
+    name: 'HazardUpdate',
     probability: 4,
     severity: 4,
     usedInQs: true,
-    question: 'TestUpdate',
+    question: 'HazardUpdate',
     type_id: 2
 } as UpdateHazardDto
 

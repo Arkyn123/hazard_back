@@ -71,7 +71,8 @@ export class HazardTypeRepository {
                 }
             }
         })
-        if (!type) throw new NotFoundException('Вид опасности не найден')
+
+        if (!type) throw new NotFoundException('Вид опасности не найден!')
         return type
     }
 
@@ -85,8 +86,8 @@ export class HazardTypeRepository {
         const type = await this.findOne(id)
 
         return await this.database.$transaction(async () => {
-            this.hazard.removeMany(type.hazards.map(h => h.id))
-            this.hazard_type.delete({ where: { id } })
-        })[1]
+            await this.hazard.removeMany(type.hazards.map(h => h.id))
+            await this.hazard_type.delete({ where: { id } })
+        })
     }
 }
