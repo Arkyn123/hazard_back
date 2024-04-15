@@ -1,7 +1,22 @@
 import { Prisma } from "@prisma/postgres/hazard"
-import { hazard, hazard_type } from '@prisma/postgres/hazard'
+import { hazard, hazard_type, parameter } from '@prisma/postgres/hazard'
 
-const hazards: hazard[] = []
+const hazards: hazard[] = [{
+  createdBy: 184184,
+  updatedBy: 184184,
+  deletedBy: null,
+  id: 1,
+  name: 'TestForParameter',
+  probability: 2,
+  severity: 2,
+  ps: 4,
+  type_id: 1,
+  usedInQs: true,
+  question: 'Test',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  deletedAt: null
+}]
 
 const hazard_types: hazard_type[] = [{
   createdBy: 184184,
@@ -14,6 +29,8 @@ const hazard_types: hazard_type[] = [{
   deletedAt: null
 }]
 
+const parameters: parameter[] = []
+
 export const mockDatabase = {
   client: {
     hazard: {
@@ -22,7 +39,7 @@ export const mockDatabase = {
       create: jest.fn((dto: { data: Prisma.hazardCreateInput }) => {
         const { data } = dto
 
-        const hazard = {
+        const hazard: hazard = {
           createdBy: 184184,
           updatedBy: 184184,
           deletedBy: null,
@@ -79,10 +96,10 @@ export const mockDatabase = {
         return { ...type, hazards: haz }
       }),
 
-      create: jest.fn((dto: { data: Prisma.hazardCreateInput }) => {
+      create: jest.fn((dto: { data: Prisma.hazard_typeCreateInput }) => {
         const { data } = dto
 
-        const type = {
+        const type: hazard_type = {
           createdBy: 184184,
           updatedBy: 184184,
           deletedBy: null,
@@ -105,6 +122,68 @@ export const mockDatabase = {
 
         const haz = hazards.filter(el => el.id == data.where.id)
         return { ...type, hazards: haz }
+      }),
+
+      update: jest.fn((data: { where: { id: number }, data: hazard_type }) => {
+        const type = hazard_types.find(el => el.id == data.where.id)
+        if (!type) return
+
+        const haz = hazards.filter(el => el.id == data.where.id)
+        const index = hazard_types.findIndex(el => el.id == data.where.id)
+        const updatedType = { ...type, ...data.data, updatedBy: 194698, updatedAt: new Date() }
+
+        hazard_types[index] = updatedType
+
+        return { ...updatedType, hazards: haz }
+      }),
+
+
+      delete: jest.fn((data: { where: { id: number } }) => {
+        const type = hazard_types.find(el => el.id == data.where.id)
+        const index = hazard_types.findIndex(el => el.id == data.where.id)
+
+        const deletedType = { ...type, deletedBy: 194698, deletedAt: new Date() }
+        hazard_types[index] = deletedType
+
+        return deletedType
+      })
+    },
+    parameter: {
+      findFirst: jest.fn((data: { where: { name: string } }) => {
+        const parameter = parameters.find(el => el.name == data.where.name && el.deletedAt == null && el.deletedBy == null)
+        if (!parameter) return
+
+        return parameter
+      }),
+
+      create: jest.fn((dto: { data: Prisma.parameterCreateInput }) => {
+        const { data } = dto
+
+        const parameter: parameter = {
+          createdBy: 184184,
+          updatedBy: 184184,
+          deletedBy: null,
+          id: Date.now(),
+          hazard_id: data.hazard.connect.id,
+          name: data.name,
+          comment: data.comment,
+          measurements: data.measurements,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null
+        }
+
+        parameters.push(parameter)
+        return parameter
+      }),
+
+      findMany: jest.fn(() => hazard_types.filter(el => el.deletedAt == null && el.deletedBy == null)),
+
+      findUnique: jest.fn((data: { where: { id: number } }) => {
+        const parameter = parameters.find(el => el.id == data.where.id && el.deletedAt == null && el.deletedBy == null)
+        if (!parameter) return
+
+        return parameter
       }),
 
       update: jest.fn((data: { where: { id: number }, data: hazard_type }) => {

@@ -7,7 +7,7 @@ import { createMock } from '@golevelup/ts-jest'
 import { HazardTypeRepository } from 'src/hazard-type/hazard-type.repository'
 import { HazardTypeController } from 'src/hazard-type/hazard-type.controller'
 import { HazardTypeService } from 'src/hazard-type/hazard-type.service'
-import { createdType, deletedType, mockType, mockUpdateType, updatedType } from './mocks/hazard-type.mock'
+import { createdType, mockType, mockUpdateType, updatedType } from './mocks/hazard-type.mock'
 import { HazardRepository } from 'src/hazard/hazard.repository'
 
 describe('HazardType (e2e)', () => {
@@ -81,7 +81,7 @@ describe('HazardType (e2e)', () => {
         .expect(res => expect(res.body.message).toBe('Вид опасности не найден!')))
   })
 
-  describe('DELETE /hazard-type Удаление вида опасности', () => {
+  describe('DELETE /hazard-type Удаление вида', () => {
     it('Должно удалить вид', async () =>
       request(app.getHttpServer())
         .delete('/hazard-type/' + id)

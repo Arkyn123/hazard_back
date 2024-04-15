@@ -24,8 +24,6 @@ describe('Hazard (e2e)', () => {
       .compile()
 
     app = moduleFixture.createNestApplication()
-    const service = app.get(HazardService)
-    
     await app.init()
   })
 

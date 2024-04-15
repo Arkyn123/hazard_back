@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import * as request from 'supertest'
-import { DatabaseHazard } from 'src/database/database.service'
-import { mockDatabase } from './mocks/database.mock'
 import { createMock } from '@golevelup/ts-jest'
 import { AppModule } from 'src/app.module'
+import { DatabaseHazard } from 'src/database/database.service'
+import { mockDatabase } from './mocks/database.mock'
 
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiLRgtC10YHRgtC40YDQvtCy0LDQvdC40LUg0YHQtdGA0LLQuNGB0LAiLCJuYW1lIjoi0YfQtdGH0LjQvTE5NDY5OCIsIkZJTyI6ItCn0JXQp9CY0J0g0KHQldCc0JXQnSDQmtCe0J3QodCi0JDQndCi0JjQndCe0JLQmNCnIiwiZW1wIjoxOTQ2OTgsImlhdCI6MTUzODgyODcwNn0.Ucj-M7Dxv_TZ7D3OSwPJxq_Ib4_M-LfOjaqjbVMAlho'
 
@@ -13,9 +13,11 @@ describe('Аутентификация', () => {
 
     beforeEach(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [AppModule]
+            imports: [AppModule],
+            // providers: [AlsMiddleware]
         })
             .overrideProvider(DatabaseHazard).useValue(mockDatabase)
+            // .overrideInterceptor(AlsMiddleware).useValue(mockAls)
             .useMocker(createMock)
             .compile()
 
