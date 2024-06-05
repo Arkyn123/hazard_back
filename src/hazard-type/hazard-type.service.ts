@@ -28,9 +28,8 @@ export class HazardTypeService {
 
   }
 
-  async update(updateHazardTypeDto: UpdateHazardTypeDto) {
-    const { id, ...updateData } = updateHazardTypeDto
-    return await this.hazard_type.update(updateHazardTypeDto.id, updateData)
+  async update({ id, ...data }: UpdateHazardTypeDto) {
+    return await this.hazard_type.update(id, data)
   }
 
   async remove(id: number) {

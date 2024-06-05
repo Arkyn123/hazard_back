@@ -3,6 +3,7 @@ import { AppModule } from './app.module'
 import { Transport } from '@nestjs/microservices'
 import { ConfigService } from '@nestjs/config'
 import { ValidationPipe } from '@nestjs/common'
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -10,6 +11,10 @@ async function bootstrap() {
   app.enableCors()
 
   const config = app.get(ConfigService)
+  const documentConfig = new DocumentBuilder().setTitle('Справочник опасных и вредных факторов').addBearerAuth().addSecurityRequirements('bearer').build()
+  const document = SwaggerModule.createDocument(app, documentConfig)
+
+  SwaggerModule.setup('api', app, document)
 
   app.connectMicroservice({
     transport: Transport.TCP,
@@ -26,6 +31,8 @@ async function bootstrap() {
     forbidNonWhitelisted: true
   }))
 
-  await app.listen(config.get<number>('PORT'))
+  await app.listen(+config.get<number>('PORT'))
+  console.log('Server started on: ' + await app.getUrl());
+
 }
 bootstrap()

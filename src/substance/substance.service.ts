@@ -9,11 +9,10 @@ export class SubstanceService {
     private readonly substance: SubstanceRepository
   ) { }
 
-  create(createSubstanceDto: CreateSubstanceDto) {
-    createSubstanceDto.hazard = { connect: { id: createSubstanceDto.hazard_id } }
-    delete createSubstanceDto.hazard_id
+  create({ hazard_id, ...data }: CreateSubstanceDto) {
+    data.hazard = { connect: { id: hazard_id } }
 
-    return this.substance.create(createSubstanceDto)
+    return this.substance.create(data)
   }
 
   findAll() {

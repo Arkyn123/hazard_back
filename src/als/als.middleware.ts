@@ -1,5 +1,5 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
-import { Inject, Injectable, Logger, NestMiddleware, UnauthorizedException } from '@nestjs/common'
+import { Inject, Injectable, Logger, NestMiddleware, Response, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { AsyncLocalStorage } from 'async_hooks'
 import { Cache } from 'cache-manager'
@@ -24,7 +24,6 @@ export class AlsMiddleware implements NestMiddleware {
 
         const store = await this.cacheManager.wrap(token, async () => await this.decodeToken(token), this.config.get('CACHE_TTL'))
 
-
         await this.cacheManager.set(token, store, this.config.get('CACHE_TTL'))
 
         this.als.run(store, () => {
@@ -41,7 +40,7 @@ export class AlsMiddleware implements NestMiddleware {
             },
             body: JSON.stringify({ token }),
         })
-            .then(res => {
+            .then((res: Response) => {
                 if (!res.ok) throw new UnauthorizedException('Ошибка в декодировании токена!')
                 return res.json()
             })

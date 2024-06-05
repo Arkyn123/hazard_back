@@ -1,3 +1,4 @@
+import { ApiProperty } from "@nestjs/swagger"
 import { IsBoolean, IsEmpty, IsInt, IsOptional, IsPositive, IsString } from "class-validator"
 
 export class CreateHazardDto {

@@ -12,13 +12,16 @@ export class HazardTypeRepository {
 
     private readonly hazard_type = this.database.client.hazard_type
 
-    async create(data: Prisma.hazard_typeCreateInput) {
-        const type = await this.findByName(data.name)
+    private async checkConflict(name: string) {
+        const type = await this.findByName(name)
         if (type) throw new ConflictException('Вид опасности с таким именем уже создан!')
+    }
+
+    async create(data: Prisma.hazard_typeCreateInput) {
+        await this.checkConflict(data.name)
 
         return await this.hazard_type.create({ data })
     }
-
 
     private async findByName(name: string) {
         return await this.hazard_type.findFirst({ where: { name } })

@@ -10,15 +10,14 @@ export class HazardService {
     private readonly hazard: HazardRepository
   ) { }
 
-  async create(createHazardDto: CreateHazardDto) {
-    if (createHazardDto.usedInQs && !createHazardDto.question) throw new BadRequestException('Введите вопрос')
-    if (!createHazardDto.usedInQs) createHazardDto.question = ""
+  async create({ type_id, ...data }: CreateHazardDto) {
+    if (data.usedInQs && !data.question) throw new BadRequestException('Введите вопрос')
+    if (!data.usedInQs) data.question = ""
 
-    createHazardDto.ps = createHazardDto.probability * createHazardDto.severity
-    createHazardDto.hazard_type = { connect: { id: createHazardDto.type_id } }
-    delete createHazardDto.type_id
+    data.ps = data.probability * data.severity
+    data.hazard_type = { connect: { id: type_id } }
 
-    return await this.hazard.create(createHazardDto as Prisma.hazardCreateInput)
+    return await this.hazard.create(data as Prisma.hazardCreateInput)
   }
 
   async findAll() {
@@ -29,14 +28,12 @@ export class HazardService {
     return await this.hazard.findOne(id)
   }
 
-  async update(updateHazardDto: UpdateHazardDto) {
-    const { id, ...data } = updateHazardDto
+  async update({ id, type_id, ...data }: UpdateHazardDto) {
 
     if (data.usedInQs && !data.question) throw new BadRequestException('Введите вопрос')
     if (!data.usedInQs) data.question = ""
 
-    data.hazard_type = { connect: { id: data.type_id } }
-    delete data.type_id
+    data.hazard_type = { connect: { id: type_id } }
 
     return await this.hazard.update(id, data)
   }

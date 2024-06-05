@@ -10,12 +10,10 @@ export class ParameterService {
     private readonly parameter: ParameterRepository,
   ) { }
 
-  create(createParameterDto: CreateParameterDto) {
+  create({ hazard_id, ...data }: CreateParameterDto) {
+    data.hazard = { connect: { id: hazard_id } }
 
-    createParameterDto.hazard = { connect: { id: createParameterDto.hazard_id } }
-    delete createParameterDto.hazard_id
-
-    return this.parameter.create(createParameterDto)
+    return this.parameter.create(data)
   }
 
   findAll() {
@@ -26,8 +24,7 @@ export class ParameterService {
     return this.parameter.findOne(id)
   }
 
-  update(updateParameterDto: UpdateParameterDto) {
-    const { id, ...data } = updateParameterDto
+  update({ id, ...data }: UpdateParameterDto) {
     return this.parameter.update(id, data)
   }
 
